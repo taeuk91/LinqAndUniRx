@@ -44,13 +44,20 @@ public class Serialization<TKey, TValue> : ISerializationCallbackReceiver{
     }
 }
 
+[Serializable]
+public class Item
+{
+    public string name;
+    public int itemID;
+    public int buff;
+
+}
+
 public class LinqExample : MonoBehaviour
 {
     public string[] names = {"henry", "태욱", "수영", "별"};
     public int[] quizGrades = {44, 55, 66, 33, 44, 99}; 
-
-
-
+    public List<Item> items;
     // Start is called before the first frame update
     void Start()
     {
@@ -82,27 +89,49 @@ public class LinqExample : MonoBehaviour
         // }
 
         // 6. 학생정보에서 점수(Value)중 90점 이상을 내림차순으로 정렬
-        Dictionary<string, int> studentsAndGrade = new Dictionary<string, int>();
+        // Dictionary<string, int> studentsAndGrade = new Dictionary<string, int>();
 
-        studentsAndGrade.Add("Henry", 100);
-        studentsAndGrade.Add("별", 80);
-        studentsAndGrade.Add("수영", 95);
-        studentsAndGrade.Add("태욱", 99);
+        // studentsAndGrade.Add("Henry", 100);
+        // studentsAndGrade.Add("별", 80);
+        // studentsAndGrade.Add("수영", 95);
+        // studentsAndGrade.Add("태욱", 99);
 
-        var sortedList = studentsAndGrade.Where(grade => grade.Value > 90)
-                                         .OrderByDescending(grade2 => grade2.Value);
-        foreach(var info in sortedList)
-        {
-            Debug.Log("이름: " + info.Key + ", 점수:" + info.Value);
+        // var sortedList = studentsAndGrade.Where(grade => grade.Value > 90)
+        //                                  .OrderByDescending(grade2 => grade2.Value);
+        // foreach(var info in sortedList)
+        // {
+        //     Debug.Log("이름: " + info.Key + ", 점수:" + info.Value);
+        // }
+
+        // // 6-1. Deserialization Dictionary from Json file
+        // string jsonData = JsonUtility.ToJson(new Serialization<string, int>(studentsAndGrade));
+        // CreateJsonFile(Application.dataPath + "//LINQ", "StudentInfo", jsonData);
+
+        // // 6-2. LINQ to Json file
+        // string jsonData2 = JsonConvert.SerializeObject(sortedList);
+        // CreateJsonFile(Application.dataPath + "//LINQ", "SortedList", jsonData2);
+
+
+        // 7. Item 리스트에서 LINQ를 이용하여 원하는 정보 가져오기
+        // 7-1. Item 리스트에서 3이라는 ItemID가 있는지 확인하기
+        // var result = items.Any(item => item.itemID.Equals(3));
+        // Debug.Log("아이템 존재 여부: " + result);
+        // 7-2. 20이 넘는 buff를 가진 아이템을 모두 가져오기
+        // var result = items.Where(item => item.buff > 20);
+        var result =
+            from item in items
+            where item.buff > 20 
+            select item;        
+
+        foreach(var item in result){
+            Debug.Log("buff가 20이상 아이템: " + item.name);
         }
+        // 7-3. 모든 buff의 평균을 계산하기
+        // var result = items.Average(item => item.buff);
+        // Debug.Log("모든 buff들의 평균값: " + result);
 
-        // 6-1. Deserialization Dictionary from Json file
-        string jsonData = JsonUtility.ToJson(new Serialization<string, int>(studentsAndGrade));
-        CreateJsonFile(Application.dataPath + "//LINQ", "StudentInfo", jsonData);
 
-        // 6-2. LINQ to Json file
-        string jsonData2 = JsonConvert.SerializeObject(sortedList);
-        CreateJsonFile(Application.dataPath + "//LINQ", "SortedList", jsonData2);
+        
 
         // foreach(var name in names){
         //     if(name =="태욱")
